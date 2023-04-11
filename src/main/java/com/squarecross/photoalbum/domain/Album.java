@@ -4,13 +4,16 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.util.Date;
+import java.util.List;
 
 
 @Entity
 @Table(name = "album", schema = "photo_album", uniqueConstraints = {@UniqueConstraint(columnNames = "album_id")})
 public class Album {
 
-    public Album(){};
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.ALL)
+    private List<Photo> photos;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,12 +21,13 @@ public class Album {
     private Long albumId;
 
     @Column(name = "album_name", unique = false, nullable = false)
-    private Long albumName;
+    private String albumName;
 
     @Column(name = "created_at", unique = false, nullable = true)
     @CreatedDate
-    private Long createdAt;
+    private Date createdAt;
 
+    public Album(){};
 
     public Long getAlbumId() {
         return albumId;
@@ -33,19 +37,19 @@ public class Album {
         this.albumId = albumId;
     }
 
-    public Long getAlbumName() {
+    public String getAlbumName() {
         return albumName;
     }
 
-    public void setAlbumName(Long albumName) {
+    public void setAlbumName(String albumName) {
         this.albumName = albumName;
     }
 
-    public Long getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Long createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
