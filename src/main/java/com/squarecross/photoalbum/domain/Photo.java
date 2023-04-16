@@ -83,4 +83,12 @@ public class Photo {
     public void setUploadedAt(Date uploadedAt) {
         this.uploadedAt = uploadedAt;
     }
+
+    public Album getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(Album album) {
+        this.album = album;
+    }
 }
