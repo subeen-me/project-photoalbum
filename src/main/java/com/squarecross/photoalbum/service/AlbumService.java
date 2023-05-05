@@ -1,5 +1,6 @@
 package com.squarecross.photoalbum.service;
 
+import com.squarecross.photoalbum.Constants;
 import com.squarecross.photoalbum.domain.Album;
 import com.squarecross.photoalbum.dto.AlbumDto;
 import com.squarecross.photoalbum.mapper.AlbumMapper;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 @Service
@@ -41,6 +45,18 @@ public class AlbumService {
         } else {
             throw new EntityNotFoundException(String.format("%d로 조회된 결과가 없습니다", searchKeyword));
         }
-
     }
+
+    public AlbumDto createAlbum(AlbumDto albumDto) throws IOException {
+        Album album = AlbumMapper.convertToModel(albumDto);
+        this.albumRepository.save(album);
+        this.createAlbumDirectories(album);
+        return AlbumMapper.convertToDto(album);
+    }
+
+    private void createAlbumDirectories(Album album) throws IOException {
+        Files.createDirectories(Paths.get(Constants.PATH_PREFIX + "/photos/original/" + album.getAlbumId()));
+        Files.createDirectories(Paths.get(Constants.PATH_PREFIX + "/photos/thumb/" + album.getAlbumId()));
+    }
+
 }
