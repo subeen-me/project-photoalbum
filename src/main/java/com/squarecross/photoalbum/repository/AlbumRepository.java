@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface AlbumRepository extends JpaRepository<Album, Long> {
 
     Optional<Album> findByAlbumNameContainingIgnoreCase (String searchKeyword);
+
+    List<Album> findByAlbumNameContainingOrderByCreatedAtDesc(String keyword);
+    List<Album> findByAlbumNameContainingOrderByAlbumNameAsc(String keyword);
 }
