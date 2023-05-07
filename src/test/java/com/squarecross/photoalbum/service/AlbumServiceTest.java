@@ -1,5 +1,6 @@
 package com.squarecross.photoalbum.service;
 
+import com.squarecross.photoalbum.Constants;
 import com.squarecross.photoalbum.domain.Album;
 import com.squarecross.photoalbum.domain.Photo;
 import com.squarecross.photoalbum.dto.AlbumDto;
@@ -14,6 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -85,5 +90,21 @@ class AlbumServiceTest {
         assertEquals("테스트", resAlbum.getAlbumName());
         assertEquals(2,resAlbum.getCount());
 
+    }
+
+    @DisplayName("앨범명을 입력하면, 앨범이 생성된다.")
+    @Test
+    void 앨범_생성_테스트() throws IOException {
+        AlbumDto albumDto = new AlbumDto();
+        albumDto.setAlbumName("New album1");
+
+        AlbumDto savedAlbum = albumService.createAlbum(albumDto);
+
+        assertEquals("New album1", savedAlbum.getAlbumName());
+        org.assertj.core.api.Assertions.assertThat(Files.exists(Paths.get(Constants.PATH_PREFIX + "/photos/original/" + savedAlbum.getAlbumId())));
+        org.assertj.core.api.Assertions.assertThat(Files.exists(Paths.get(Constants.PATH_PREFIX + "/photos/thumb/" + savedAlbum.getAlbumId())));
+
+        Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX + "/photos/original/" + savedAlbum.getAlbumId()));
+        Files.deleteIfExists(Paths.get(Constants.PATH_PREFIX + "/photos/thumb/" + savedAlbum.getAlbumId()));
     }
 }
