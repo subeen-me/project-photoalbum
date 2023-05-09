@@ -51,15 +51,25 @@ public class AlbumService {
         }
     }
 
-    public List<AlbumDto> getAlbumList(String keyword, String sort) {
+    public List<AlbumDto> getAlbumList(String keyword, String sort, String orderBy) {
         List<Album> albums;
-        if(Objects.equals(sort, "byName")) {
-            albums = albumRepository.findByAlbumNameContainingOrderByAlbumNameAsc(keyword);
-        } else if (Objects.equals(sort, "byDate")) {
-            albums = albumRepository.findByAlbumNameContainingOrderByCreatedAtDesc(keyword);
+
+        if(Objects.equals(sort, "byName")){
+            if(Objects.equals(orderBy, "desc")) {
+                albums = albumRepository.findByAlbumNameContainingOrderByAlbumNameDesc(keyword);
+            }else{
+                albums = albumRepository.findByAlbumNameContainingOrderByAlbumNameAsc(keyword);
+            }
+        } else if (Objects.equals(sort, "byDate")){
+            if(Objects.equals(orderBy, "desc")) {
+                albums = albumRepository.findByAlbumNameContainingOrderByCreatedAtDesc(keyword);
+            }else{
+                albums = albumRepository.findByAlbumNameContainingOrderByCreatedAtAsc(keyword);
+            }
         } else {
-            throw new IllegalArgumentException("알 수 없는 정렬 기준입니다.");
+            throw new IllegalArgumentException("알 수 없는 정렬 기준 입니다.");
         }
+
         List<AlbumDto> albumDtos = AlbumMapper.convertToDtoList(albums);
 
         for(AlbumDto albumDto : albumDtos) {
