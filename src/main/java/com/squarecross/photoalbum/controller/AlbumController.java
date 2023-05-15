@@ -39,6 +39,13 @@ public class AlbumController {
 
     }
 
+    @RequestMapping(value = "/{albumId}", method = RequestMethod.PUT)
+    public ResponseEntity<AlbumDto> updateAlbum(@PathVariable("albumId") final long albumId,
+                                                @RequestBody final AlbumDto albumDto) {
+        AlbumDto res = albumService.changeName(albumId, albumDto);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/query", method = RequestMethod.GET)
     public ResponseEntity<AlbumDto> getAlbumByQuery(@RequestParam(value = "albumId") long albumId) {
         AlbumDto album = albumService.getAlbum(albumId);
