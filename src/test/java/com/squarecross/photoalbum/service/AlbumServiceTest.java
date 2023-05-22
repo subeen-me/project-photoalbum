@@ -4,6 +4,7 @@ import com.squarecross.photoalbum.Constants;
 import com.squarecross.photoalbum.domain.Album;
 import com.squarecross.photoalbum.domain.Photo;
 import com.squarecross.photoalbum.dto.AlbumDto;
+import com.squarecross.photoalbum.mapper.AlbumMapper;
 import com.squarecross.photoalbum.repository.AlbumRepository;
 import com.squarecross.photoalbum.repository.PhotoRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +17,10 @@ import javax.persistence.EntityNotFoundException;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -149,5 +152,36 @@ class AlbumServiceTest {
 
         //앨범명 변경되었는지 확인
         assertEquals("변경후", updatedDto.getAlbumName());
+    }
+
+    @Test
+    void 앨범_삭제_테스트() throws IOException {
+        //앨범 생성
+        Album album = new Album();
+        album.setAlbumName("삭제할 앨범");
+        Album savedAlbum = albumRepository.save(album);
+        AlbumDto albumDto = AlbumMapper.convertToDto(savedAlbum);
+        Long albumId = savedAlbum.getAlbumId();
+
+
+//        //사진 생성
+//        Photo photo = new Photo();
+//        photo.setFileName("삭제할 사진");
+//        photo.setAlbum(savedAlbum);
+//        Photo savedPhoto = photoRepository.save(photo);
+//        Long photoId = savedPhoto.getPhotoId();
+
+        //앨범 생성 및 삭제
+        albumService.createAlbum(albumDto);
+        albumService.deleteAlbum(albumId);
+        Path path = Paths.get(Constants.PATH_PREFIX + "/photos/original/" + albumId);
+        Path thumbPath = Paths.get(Constants.PATH_PREFIX + "/photos/thumb/" + albumId);
+
+        //앨범, 실제 파일이 삭제되었는지 확인
+        assertEquals(Optional.empty(), albumRepository.findById(albumId));
+        assertTrue(Files.notExists(path));
+        assertTrue(Files.notExists(thumbPath));
+
+
     }
 }
