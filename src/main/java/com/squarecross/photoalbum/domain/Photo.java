@@ -1,5 +1,6 @@
 package com.squarecross.photoalbum.domain;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -31,7 +32,7 @@ public class Photo {
     private int fileSize;
 
     @Column(name = "uploaded_at", unique = false, nullable = true)
-    @CreatedDate
+    @CreationTimestamp
     private Date uploadedAt;
 
     public Photo(){};
