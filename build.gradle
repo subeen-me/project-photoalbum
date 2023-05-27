@@ -26,6 +26,8 @@ dependencies {
     //runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'org.imgscalr:imgscalr-lib:4.2' //썸네일 축소 라이브러리
 }
 
 tasks.named('test') {
