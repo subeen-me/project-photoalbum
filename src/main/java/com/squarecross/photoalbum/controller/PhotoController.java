@@ -28,9 +28,17 @@ public class PhotoController {
                                                        @RequestParam("photos")MultipartFile[] files) {
         List<PhotoDto> photoDtos = new ArrayList<>();
         for(MultipartFile file : files) {
+            if(file.getContentType().startsWith("image") == false) {
+                throw new IllegalArgumentException("이미지 파일이 아닙니다.");
+            }
             PhotoDto photoDto = photoService.savePhoto(file, albumId);
             photoDtos.add(photoDto);
         }
         return new ResponseEntity<>(photoDtos, HttpStatus.OK);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 }
