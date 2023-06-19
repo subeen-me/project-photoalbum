@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -109,4 +111,17 @@ public class PhotoService {
     }
 
 
+    public List<File> getImageFileList(Long[] photoIds) {
+        List<File> files = new ArrayList<>();
+
+        for(Long photoId : photoIds) {
+            Optional<Photo> res = photoRepository.findById(photoId);
+            if(res.isEmpty()) {
+                throw new EntityNotFoundException(String.format("사진을 ID %d를 찾을 수 없습니다", photoId));
+            }
+            files.add(new File(Constants.PATH_PREFIX + res.get().getOriginalUrl()));
+        }
+
+        return files;
+    }
 }
