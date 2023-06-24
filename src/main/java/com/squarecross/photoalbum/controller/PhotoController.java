@@ -48,14 +48,19 @@ public class PhotoController {
                                 @RequestParam("photoIds") Long[] photoIds, HttpServletResponse response) {
         try {
             if (photoIds.length == 1) {
-                File file = photoService.getImageFile(photoIds[0]);
+                File file = photoService.getImageFile(photoIds[0]); //file 하나일 때
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.setContentType("image/jpeg");
+                response.addHeader("Content-Disposition", "attachment;filename="+ file.getName());
+
                 OutputStream outputStream = response.getOutputStream();
                 IOUtils.copy(new FileInputStream(file), outputStream);
                 outputStream.close();
             } else {
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.setContentType("application/zip");
-                response.addHeader("Content-Disposition", "attachment; filename=" + albumId + ".zip");
+                response.addHeader("Content-Disposition", "attachment; filename=" + albumId + "_dump.zip");
 
                 FileOutputStream fos = null;
                 ZipOutputStream zipOut = null;
