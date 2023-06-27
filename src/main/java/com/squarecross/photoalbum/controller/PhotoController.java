@@ -29,6 +29,16 @@ public class PhotoController {
         return new ResponseEntity<>(photoDto, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public ResponseEntity<List<PhotoDto>> getPhotoList(
+            @PathVariable final Long albumId,
+            @RequestParam(value = "sort", required = false, defaultValue = "byDate") final String sort,
+            @RequestParam(value = "orderBy", required = false, defaultValue = "desc") final String orderBy) {
+        List<PhotoDto> photoDtos = photoService.getPhotoList(albumId, sort, orderBy);
+
+        return new ResponseEntity<>(photoDtos, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<List<PhotoDto>> uploadPhotos(@PathVariable("albumId") final Long albumId,
                                                        @RequestParam("photos")MultipartFile[] files) {

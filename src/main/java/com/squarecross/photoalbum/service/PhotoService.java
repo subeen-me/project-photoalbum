@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -123,5 +124,33 @@ public class PhotoService {
         }
 
         return files;
+    }
+
+    public List<PhotoDto> getPhotoList(Long albumId, String sort, String orderBy) {
+    //    Optional<Album> res = albumRepository.findById(albumId); //앨범 하나 찾고
+
+        List<Photo> photos;
+
+      //  List<Photo> photos = photoRepository.findById_albumId(res.get().getAlbumId()); //정렬 기본
+
+        if(Objects.equals(sort, "byName")) {
+            if(Objects.equals(orderBy, "desc")) {
+                photos = photoRepository.findAllByAlbum_AlbumIdOrderByFileNameDesc(albumId);
+            }else {
+                photos = photoRepository.findAllByAlbum_AlbumIdOrderByFileNameAsc(albumId);
+            }
+        } else if (Objects.equals(sort, "byDate")) {
+            if(Objects.equals(orderBy, "desc")) {
+                photos = photoRepository.findAllByAlbum_AlbumIdOrderByUploadedAtDesc(albumId);
+            }else {
+                photos = photoRepository.findAllByAlbum_AlbumIdOrderByUploadedAtAsc(albumId);
+            }
+        } else {
+            throw new IllegalArgumentException("알 수 없는 정렬 기준입니다.");
+        }
+
+        List<PhotoDto> photoDtos = PhotoMapper.convertToDtoList(photos);
+
+        return photoDtos;
     }
 }

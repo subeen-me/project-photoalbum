@@ -3,6 +3,9 @@ package com.squarecross.photoalbum.mapper;
 import com.squarecross.photoalbum.domain.Photo;
 import com.squarecross.photoalbum.dto.PhotoDto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class PhotoMapper {
     public static PhotoDto convertToDto(Photo photo) {
         PhotoDto photoDto = new PhotoDto();
@@ -14,5 +17,9 @@ public class PhotoMapper {
         photoDto.setFileSize(photo.getFileSize());
         photoDto.setUploadedAt(photo.getUploadedAt());
         return photoDto;
+    }
+
+    public static List<PhotoDto> convertToDtoList(List<Photo> photos) {
+        return photos.stream().map(PhotoMapper::convertToDto).collect(Collectors.toList());
     }
 }
