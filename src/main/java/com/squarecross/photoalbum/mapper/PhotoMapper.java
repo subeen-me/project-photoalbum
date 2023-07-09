@@ -19,6 +19,18 @@ public class PhotoMapper {
         return photoDto;
     }
 
+    public static Photo convertToModel(PhotoDto photoDto) {
+        Photo photo = new Photo();
+        photo.getAlbum().setAlbumId(photoDto.getAlbumId());
+        photo.setFileName(photoDto.getFileName());
+        photo.setThumbUrl(photoDto.getThumbUrl());
+        photo.setOriginalUrl(photoDto.getOriginalUrl());
+        photo.setFileSize(photoDto.getFileSize());
+        photo.setUploadedAt(photoDto.getUploadedAt());
+        return photo;
+    }
+
+
     public static List<PhotoDto> convertToDtoList(List<Photo> photos) {
         return photos.stream().map(PhotoMapper::convertToDto).collect(Collectors.toList());
     }

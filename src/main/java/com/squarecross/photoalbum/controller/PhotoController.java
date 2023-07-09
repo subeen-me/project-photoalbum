@@ -53,6 +53,22 @@ public class PhotoController {
         return new ResponseEntity<>(photoDtos, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/move", method = RequestMethod.PUT)
+    public ResponseEntity<List<PhotoDto>> movePhotos(@PathVariable("albumId") final Long fromAlbumId,
+                                                     @RequestParam("toAlbumId") final Long toAlbumId,
+                                                     @RequestParam("photoIds") Long[] photoIds, HttpServletResponse response) {
+
+        List<PhotoDto> photoDtos = new ArrayList<>();
+
+        for(Long photoId : photoIds) {
+            PhotoDto photoDto = photoService.movePhoto(fromAlbumId, toAlbumId, photoId);
+            photoDtos.add(photoDto);
+        }
+
+        //앨범 옮긴 사진 리스트
+        return new ResponseEntity<>(photoDtos, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public void downloadPhotos( @PathVariable("albumId") final Long albumId,
                                 @RequestParam("photoIds") Long[] photoIds, HttpServletResponse response) {

@@ -19,7 +19,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -127,8 +129,6 @@ public class PhotoService {
     }
 
     public List<PhotoDto> getPhotoList(Long albumId, String sort, String orderBy) {
-    //    Optional<Album> res = albumRepository.findById(albumId); //앨범 하나 찾고
-
         List<Photo> photos;
 
       //  List<Photo> photos = photoRepository.findById_albumId(res.get().getAlbumId()); //정렬 기본
@@ -152,5 +152,48 @@ public class PhotoService {
         List<PhotoDto> photoDtos = PhotoMapper.convertToDtoList(photos);
 
         return photoDtos;
+    }
+
+    public PhotoDto movePhoto(Long fromAlbumId, Long toAlbumId, Long photoId) {
+
+        Optional<Photo> res = photoRepository.findById(photoId);
+
+        if(res.isEmpty()) {
+            throw new EntityNotFoundException(String.format("사진을 ID %d를 찾을 수 없습니다.", photoId));
+        }
+
+        if(!(res.get().getAlbum().getAlbumId() == fromAlbumId)) {
+            throw new EntityNotFoundException(String.format("변경 전 앨범 ID와 기존 ID가 다릅니다."));
+        }
+
+        String updatedOriUrl = toAlbumId + "/" + res.get().getFileName();
+        String updatedThumbUrl = toAlbumId + "/" + res.get().getFileName();
+
+        Path oriFile = Paths.get(Constants.PATH_PREFIX + res.get().getOriginalUrl());
+        Path newOriFile = Paths.get(original_path + "/" + updatedOriUrl);
+
+        Path thumbFile = Paths.get(Constants.PATH_PREFIX + res.get().getThumbUrl());
+        Path newThumbFile = Paths.get(thumb_path + "/" + updatedThumbUrl);
+
+        try {
+            Path newOriFilePath = Files.move(oriFile, newOriFile, StandardCopyOption.REPLACE_EXISTING);
+            Path newThumbFilePath = Files.move(thumbFile, newThumbFile, StandardCopyOption.REPLACE_EXISTING);
+
+            System.out.println(newOriFilePath);
+            System.out.println(newThumbFilePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Optional<Album> album = albumRepository.findById(toAlbumId);
+
+        Photo photo = res.get();
+        photo.setAlbum(album.get());
+        photo.setOriginalUrl("/photos/original/" + updatedOriUrl);
+        photo.setThumbUrl("/photos/thumb/" + updatedThumbUrl);
+
+        Photo updatedPhoto = this.photoRepository.save(photo);
+
+        return PhotoMapper.convertToDto(updatedPhoto);
     }
 }
