@@ -7,6 +7,7 @@ import com.squarecross.photoalbum.dto.PhotoDto;
 import com.squarecross.photoalbum.mapper.PhotoMapper;
 import com.squarecross.photoalbum.repository.AlbumRepository;
 import com.squarecross.photoalbum.repository.PhotoRepository;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,10 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class PhotoService {
@@ -103,6 +101,24 @@ public class PhotoService {
             throw new RuntimeException("Could not store the file. Error : " + e.getMessage());
         }
 
+    }
+
+    public void deletePhotos(Long photoId, Long albumId) throws IOException {
+            Optional<Photo> photo = this.photoRepository.findById(photoId);
+
+            if(photo.isPresent()) {
+                Photo deletePhoto = photo.get();
+                this.photoRepository.deleteById(photoId);
+                this.deletePhotoFiles(deletePhoto, albumId);
+            } else {
+                throw new NoSuchElementException(String.format("Photo ID '%d' 가 존재하지 않습니다.", photoId));
+            }
+    }
+
+    private void deletePhotoFiles(Photo deletePhoto, Long albumId) throws IOException{
+        String filePath = albumId + "/" + deletePhoto.getFileName();
+        Files.deleteIfExists(Paths.get(original_path  + "/" + filePath));
+        Files.deleteIfExists(Paths.get(thumb_path + "/" + filePath));
     }
 
     public File getImageFile(Long photoId) {

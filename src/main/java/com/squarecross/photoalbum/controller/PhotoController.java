@@ -56,7 +56,7 @@ public class PhotoController {
     @RequestMapping(value = "/move", method = RequestMethod.PUT)
     public ResponseEntity<List<PhotoDto>> movePhotos(@PathVariable("albumId") final Long fromAlbumId,
                                                      @RequestParam("toAlbumId") final Long toAlbumId,
-                                                     @RequestParam("photoIds") Long[] photoIds, HttpServletResponse response) {
+                                                     @RequestParam("photoIds") Long[] photoIds) {
 
         List<PhotoDto> photoDtos = new ArrayList<>();
 
@@ -65,8 +65,15 @@ public class PhotoController {
             photoDtos.add(photoDto);
         }
 
-        //앨범 옮긴 사진 리스트
+        //앨범 옮긴 사진 리스트 반환
         return new ResponseEntity<>(photoDtos, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{photoId}", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> deletePhotos(@PathVariable("albumId") final Long albumId,
+                                             @PathVariable Long photoId) throws IOException {
+        photoService.deletePhotos(photoId, albumId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
